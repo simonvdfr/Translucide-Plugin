@@ -1,4 +1,3 @@
-/* Plugin pour ajouter un zoom au clic sur les images */
 
 // Fonction de zoom sur les liens contenant des images
 img_zoom = function(event)
@@ -32,7 +31,10 @@ img_zoom = function(event)
 	original_height = $("img", this).height();
 	original_top = $("img", this).offset().top;
 	original_left = $("img", this).offset().left;
-	
+
+	border_radius = window.getComputedStyle($("img", this)[0]).borderRadius;
+
+
 	// Copie l'image en une version flottante zoomable // appendTo(this)
 	$("img", this).clone().appendTo("body").attr("id", "clone"+id).addClass("clone").css({
 		position: "absolute",
@@ -42,7 +44,9 @@ img_zoom = function(event)
 		left: original_left,
 		zIndex: 102,
 		transform: "none",
-		cursor: "pointer"
+		cursor: "pointer",
+
+		borderRadius: border_radius
 	})
 
 	// Ajout le bloc de progression
@@ -55,7 +59,10 @@ img_zoom = function(event)
 		height: original_height,
 		top: original_top,
 		left: original_left,
-		zIndex: 104
+		zIndex: 104,
+
+		overflow: "hidden",
+		borderRadius: border_radius
 	})
 
 	// Initialise la barre de progression de download
