@@ -107,19 +107,26 @@ img_zoom = function(event)
 				$(".progress").remove();
 				$("#progress"+id).fadeOut("fast", function(){ $(this).remove() });
 
+
 				// Calcule de la position de l'image zoomé
 				var img_clone_width = $("#clone"+id)[0].naturalWidth;
 				var img_clone_height = $("#clone"+id)[0].naturalHeight;
 				var window_width = $(window).width();
 				var window_height = $(window).height();
-				if(window_width > img_clone_width) var left = (window_width - img_clone_width) / 2; else var left = 0;
-				if(window_height > img_clone_height) var top = (window_height - img_clone_height) / 2; else var top = $("body").scrollTop();
+				if(window_width > img_clone_width) var left = (window_width - img_clone_width) / 2;
+				else var left = 0;
+
+				if(window_height > img_clone_height) var top = (window_height - img_clone_height) / 2;
+				else var top = $(window).scrollTop();
+				
 
 				// Calcule la taille du fond gris
 				if($(document).width() > img_clone_width) var bg_width = $(document).width(); 
 				else var bg_width = img_clone_width;
+
 				if($(document).height() > img_clone_height) var bg_height = $(document).height();
 				else var bg_height = img_clone_height;
+
 
 				// Donne la bonne taille au fond gris
 				$("#under-zoom").css({
@@ -127,8 +134,10 @@ img_zoom = function(event)
 					height: bg_height
 				});
 
+
 				// Affiche le fond gris
 				$("#under-zoom").fadeIn();
+
 
 				// Zoom à la bonne taille
 				$("#clone"+id).animate({
@@ -140,6 +149,7 @@ img_zoom = function(event)
 
 				
 				// @todo: ajouter onmousedown, si on reste cliquer on peut se déplacer dans l'image si elle est plus grande que l'écran
+
 
 				// Si on click dans l'écran on dézoom
 				$("body").on("click.dezoom", function(event){
