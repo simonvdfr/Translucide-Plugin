@@ -116,9 +116,11 @@ img_zoom = function(event)
 				if(window_width > img_clone_width) var left = (window_width - img_clone_width) / 2;
 				else var left = 0;
 
-				if(window_height > img_clone_height) var top = (window_height - img_clone_height) / 2;
+				if(window_height > img_clone_height) var top = $(window).scrollTop() + ((window_height - img_clone_height) / 2);
 				else var top = $(window).scrollTop();
 				
+				console.log($(window).scrollTop());
+				console.log("top"+top);
 
 				// Calcule la taille du fond gris
 				if($(document).width() > img_clone_width) var bg_width = $(document).width(); 
