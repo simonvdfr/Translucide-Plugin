@@ -21,6 +21,6 @@ $(document).ready(function()
 		});
 
 		// Affichage du message après un délai
-		$("#cnilcookie").delay(2000).fadeIn("slow");
+		$("#cnilcookie").delay(2000).fadeTo("slow", 0.6);
 	}
 });
