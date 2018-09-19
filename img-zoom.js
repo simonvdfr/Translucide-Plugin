@@ -1,6 +1,6 @@
 //@todo ajouter le cursor icon zoom
-//@todo au chargement des images verifier qu'il y a des image next et prev pour affichÈ/masquer les bt
-//@todo changer l'image focus au dÈzoom ? => spÈcifique au template
+//@todo au chargement des images verifier qu'il y a des image next et prev pour affich√©/masquer les bt
+//@todo changer l'image focus au d√©zoom ? => sp√©cifique au template
 //@todo gestion des touches de clavier
 //@todo gestion des gestures sur mobile (slide left/right)
 //@todo gestion des zoomout et clear des click/action
@@ -12,14 +12,14 @@ img_nav = function(nav)
 
 	if(nav == 'prev') 
 	{
-		// Image prÈcedante
+		// Image pr√©cedante
 		var img = zoom_list[($.inArray(start, zoom_list) - 1 + zoom_list.length) % zoom_list.length];
 
-		// Si pas d'image avant on masque les flËches
+		// Si pas d'image avant on masque les fl√®ches
 		if(zoom_list[($.inArray(start, zoom_list) - 2 + zoom_list.length) % zoom_list.length] == undefined)
 			$("#zoom-left").fadeOut("fast");
 			
-		// Si icÙne next masquÈe et image next dispo on affiche l'icÙne next
+		// Si ic√¥ne next masqu√©e et image next dispo on affiche l'ic√¥ne next
 		if($("#zoom-right").is(":hidden") && zoom_list[($.inArray(start, zoom_list) + 2) % zoom_list.length] != undefined)
 			$("#zoom-right").fadeIn("fast");
 	}
@@ -28,15 +28,15 @@ img_nav = function(nav)
 		// Image suivante
 		var img = zoom_list[($.inArray(start, zoom_list) + 1) % zoom_list.length];
 
-		// Si pas d'image aprËs on masque les flËches
+		// Si pas d'image apr√®s on masque les fl√®ches
 		if(zoom_list[($.inArray(start, zoom_list) + 2) % zoom_list.length] == undefined)
 			$("#zoom-right").fadeOut("fast");
 
-		// Si icÙne prev masquÈe et image prev dispo on affiche l'icÙne prev
+		// Si ic√¥ne prev masqu√©e et image prev dispo on affiche l'ic√¥ne prev
 		if($("#zoom-left").is(":hidden") && zoom_list[($.inArray(start, zoom_list) - 2 + zoom_list.length) % zoom_list.length] != undefined)
 			$("#zoom-left").fadeIn("fast");
 
-		//if(img == undefined) img = zoom_list[1]; // Loop au dÈbut
+		//if(img == undefined) img = zoom_list[1]; // Loop au d√©but
 	}
 
 	//@todo faire un loading
@@ -55,15 +55,15 @@ img_zoom = function(event)
 	// Objet cliquer
 	this_source = this;
 
-	// DÈsactive le clic pour Èviter de lancer plusieurs fois la mÍme instance
+	// D√©sactive le clic pour √©viter de lancer plusieurs fois la m√™me instance
 	$(this_source).off("click.zoom");
 
-	// DÈsactive le lien
+	// D√©sactive le lien
 	$(this_source).on("click.disable", function(event){
 		return false;
 	});
 
-	// Image ‡ charger
+	// Image √† charger
 	img = $(this_source).attr("href");
 
 
@@ -139,7 +139,7 @@ img_zoom = function(event)
 		},
 		success: function()
 		{			
-			// DÈsactive la dÈsactivation du click sur l'image
+			// D√©sactive la d√©sactivation du click sur l'image
 			$(this_source).off("click.disable");
 
 			// Ajout du fond gris
@@ -155,7 +155,7 @@ img_zoom = function(event)
 				$(".progress").remove();
 				$("#progress"+id).fadeOut("fast", function(){ $(this).remove() });
 
-				// Calcule de la position de l'image zoomÈ
+				// Calcule de la position de l'image zoom√©
 				var img_clone_width = $("#clone"+id)[0].naturalWidth;
 				var img_clone_height = $("#clone"+id)[0].naturalHeight;
 				var window_width = $(window).width();
@@ -178,7 +178,7 @@ img_zoom = function(event)
 				// Affiche le fond gris
 				$("#under-zoom").fadeIn();
 
-				// Zoom ‡ la bonne taille
+				// Zoom √† la bonne taille
 				$("#clone"+id).animate({
 					width: $("#clone"+id)[0].naturalWidth,
 					height: $("#clone"+id)[0].naturalHeight,
@@ -187,9 +187,9 @@ img_zoom = function(event)
 				}, 'slow');
 
 				
-				// @todo: ajouter onmousedown, si on reste cliquer on peut se dÈplacer dans l'image si elle est plus grande que l'Ècran
+				// @todo: ajouter onmousedown, si on reste cliquer on peut se d√©placer dans l'image si elle est plus grande que l'√©cran
 
-				// Si on click dans l'Ècran on dÈzoom
+				// Si on click dans l'√©cran on d√©zoom
 				$("body").on("click.dezoom", function(event){
 					event.preventDefault();
 					event.stopPropagation();
@@ -197,13 +197,13 @@ img_zoom = function(event)
 					// Si on click ailleur que sur la navigation entre image
 					if(!$(event.target).hasClass("fa-up-open")) 
 					{
-						// Supprime le clic sur tout l'Ècran
+						// Supprime le clic sur tout l'√©cran
 						$("body").unbind("click.dezoom");
 
 						// Supprime la navigation entre image
 						$(".zoom-nav").fadeOut("fast", function(){ $(this).remove() });
 
-						// DÈzoom
+						// D√©zoom
 						$("#clone"+id).animate({
 								width: original_width,
 								height: original_height,
@@ -230,18 +230,18 @@ img_zoom = function(event)
 				// Ajout des fleches de navigation entre les images de la gallerie
 				if($(".zoom").length >= 2)
 				{
-					// CrÈation de la liste des diff images (sans l'image dÈj‡ zoomÈ)
+					// Cr√©ation de la liste des diff images (sans l'image d√©j√† zoom√©)
 					zoom_tmp = {};
 					$(".zoom").not(".clone").each(function(cle, val) 
 					{
 						// On ne garde que l'arg zoom
 						var zoom_file = new RegExp('[\?&]' + 'zoom' + '=([^&#]*)').exec(val.src)[1];
 
-						// CrÈation du tableau pour bien avoir qu'une seul fois chaque image
+						// Cr√©ation du tableau pour bien avoir qu'une seul fois chaque image
 						zoom_tmp[zoom_file] = cle;
 					});
 
-					// Inverse les variables et clÈs
+					// Inverse les variables et cl√©s
 					zoom_list = [];
 					$.each(zoom_tmp, function(cle, val) { 
 						zoom_list[val] = cle;
@@ -264,7 +264,7 @@ img_zoom = function(event)
 			$(".progress").remove();
 			$("#progress"+id).remove();
 
-			// Supprime le clic sur tout l'Ècran
+			// Supprime le clic sur tout l'√©cran
 			$("body").unbind("click.dezoom");
 
 				// Supprime les clones
