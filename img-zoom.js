@@ -1,9 +1,14 @@
-//@todo ajouter le cursor icon zoom
-//@todo au chargement des images verifier qu'il y a des image next et prev pour affiché/masquer les bt
+
+//@todo placement des fleches si scroll
+//@todo affichage loading ne marche plus ?
+
+
 //@todo changer l'image focus au dézoom ? => spécifique au template
-//@todo gestion des touches de clavier
 //@todo gestion des gestures sur mobile (slide left/right)
 //@todo gestion des zoomout et clear des click/action
+
+// Mode masquage des images next et prev en bout de liste loop = false
+loop = true;
 
 // Navigation entre les images
 img_nav = function(nav)
@@ -15,28 +20,34 @@ img_nav = function(nav)
 		// Image précedante
 		var img = zoom_list[($.inArray(start, zoom_list) - 1 + zoom_list.length) % zoom_list.length];
 
-		// Si pas d'image avant on masque les flèches
-		if(zoom_list[($.inArray(start, zoom_list) - 2 + zoom_list.length) % zoom_list.length] == undefined)
-			$("#zoom-left").fadeOut("fast");
-			
-		// Si icône next masquée et image next dispo on affiche l'icône next
-		if($("#zoom-right").is(":hidden") && zoom_list[($.inArray(start, zoom_list) + 2) % zoom_list.length] != undefined)
-			$("#zoom-right").fadeIn("fast");
+		if(!loop)
+		{
+			// Si pas d'image avant on masque les flèches
+			if(zoom_list[($.inArray(start, zoom_list) - 2 + zoom_list.length) % zoom_list.length] == undefined)
+				$("#zoom-left").fadeOut("fast");
+				
+			// Si icône next masquée et image next dispo on affiche l'icône next
+			if($("#zoom-right").is(":hidden") && zoom_list[($.inArray(start, zoom_list) + 2) % zoom_list.length] != undefined)
+				$("#zoom-right").fadeIn("fast");
+		}
+		else if(img == undefined) img = zoom_list[zoom_list.length - 1]; // Loop sur la dernière image
 	}
 	else if(nav == 'next') 
 	{
 		// Image suivante
 		var img = zoom_list[($.inArray(start, zoom_list) + 1) % zoom_list.length];
 
-		// Si pas d'image après on masque les flèches
-		if(zoom_list[($.inArray(start, zoom_list) + 2) % zoom_list.length] == undefined)
-			$("#zoom-right").fadeOut("fast");
+		if(!loop)
+		{
+			// Si pas d'image après on masque les flèches
+			if(zoom_list[($.inArray(start, zoom_list) + 2) % zoom_list.length] == undefined)
+				$("#zoom-right").fadeOut("fast");
 
-		// Si icône prev masquée et image prev dispo on affiche l'icône prev
-		if($("#zoom-left").is(":hidden") && zoom_list[($.inArray(start, zoom_list) - 2 + zoom_list.length) % zoom_list.length] != undefined)
-			$("#zoom-left").fadeIn("fast");
-
-		//if(img == undefined) img = zoom_list[1]; // Loop au début
+			// Si icône prev masquée et image prev dispo on affiche l'icône prev
+			if($("#zoom-left").is(":hidden") && zoom_list[($.inArray(start, zoom_list) - 2 + zoom_list.length) % zoom_list.length] != undefined)
+				$("#zoom-left").fadeIn("fast");
+		}
+		else if(img == undefined) img = zoom_list[1]; // Loop au début
 	}
 
 	//@todo faire un loading
@@ -59,9 +70,7 @@ img_zoom = function(event)
 	$(this_source).off("click.zoom");
 
 	// Désactive le lien
-	$(this_source).on("click.disable", function(event){
-		return false;
-	});
+	$(this_source).on("click.disable", function(event){ return false; });
 
 	// Image à charger
 	img = $(this_source).attr("href");
@@ -92,7 +101,7 @@ img_zoom = function(event)
 		left: original_left,
 		zIndex: 102,
 		transform: "none",
-		cursor: "pointer",
+		cursor: "zoom-out",
 
 		borderRadius: border_radius
 	})
@@ -143,7 +152,7 @@ img_zoom = function(event)
 			$(this_source).off("click.disable");
 
 			// Ajout du fond gris
-			$("body").append("<div id='under-zoom' style='display: none; background-color: rgba(200, 200, 200, 0.8); z-index: 100; position: absolute; top: 0; left: 0; right: 0;'></div>");			
+			$("body").append("<div id='under-zoom' style='display: none; background-color: rgba(200, 200, 200, 0.8); z-index: 100; position: absolute; top: 0; left: 0; right: 0; cursor: zoom-out;'></div>");			
 			
 			// Inject la grande image
 			$("#clone"+id).attr("src", img);
@@ -160,8 +169,18 @@ img_zoom = function(event)
 				var img_clone_height = $("#clone"+id)[0].naturalHeight;
 				var window_width = $(window).width();
 				var window_height = $(window).height();
-				if(window_width > img_clone_width) var left = (window_width - img_clone_width) / 2; else var left = 0;
-				if(window_height > img_clone_height) var top = (window_height - img_clone_height) / 2; else var top = $("body").scrollTop();
+
+				// À gauche ou centré en fonction de la taille
+				if(window_width > img_clone_width) 
+					var left = (window_width - img_clone_width) / 2; 
+				else 
+					var left = 0;
+				
+				// Si image plus grande en hauteur on la colle au haut de la windows en prenant compte du scroll
+				if(window_height > img_clone_height) 
+					var top = $window.scrollTop() + (window_height - img_clone_height) / 2;
+				else 
+					var top = $window.scrollTop();
 
 				// Calcule la taille du fond gris
 				if($(document).width() > img_clone_width) var bg_width = $(document).width(); 
@@ -193,9 +212,9 @@ img_zoom = function(event)
 				$("body").on("click.dezoom", function(event){
 					event.preventDefault();
 					event.stopPropagation();
-					
+
 					// Si on click ailleur que sur la navigation entre image
-					if(!$(event.target).hasClass("fa-up-open")) 
+					if(!$(event.target).closest("a").hasClass("zoom-nav")) 
 					{
 						// Supprime le clic sur tout l'écran
 						$("body").unbind("click.dezoom");
@@ -217,6 +236,9 @@ img_zoom = function(event)
 
 								// Re-active le lien sur l'image
 								$(this_source).on("click.zoom", img_zoom);
+
+								// Désactive la navigation par click
+								$("body").off("keydown.zoom");
 							}
 						);
 
@@ -247,11 +269,29 @@ img_zoom = function(event)
 						zoom_list[val] = cle;
 					});
 
-					var zoom_left = "<a id='zoom-left' class='zoom-nav' href='javascript:void(0)' onclick=\"img_nav('prev')\" style='z-index: 110; position: absolute; top: 50%; left: 10px;'><i class='fa fa-up-open r270 mega'></i></a>";
-					var zoom_right = "<a id='zoom-right' class='zoom-nav' href='javascript:void(0)' onclick=\"img_nav('next')\" style='z-index: 110; position: absolute; top: 50%; right: 10px;'><i class='fa fa-up-open r90 mega'></i></a>";
+					var zoom_left = "<a id='zoom-left' class='zoom-nav none' href='javascript:void(0)' onclick=\"img_nav('prev')\" style='z-index: 110; position: absolute; top: 0; left: 10px; height: 100%;'><i class='fa fa-up-open r270 mega relative' style='top:50%'></i></a>";
+					var zoom_right = "<a id='zoom-right' class='zoom-nav none' href='javascript:void(0)' onclick=\"img_nav('next')\" style='z-index: 110; position: absolute; top: 0; right: 10px; height: 100%;'><i class='fa fa-up-open r90 mega relative' style='top:50%'></i></a>";
+
+					// Check si existance d'image prev/next
+					var start = $(".zoom.clone").attr("src");
+					var prev = zoom_list[($.inArray(start, zoom_list) - 1 + zoom_list.length) % zoom_list.length];// Image précedante
+					var next = zoom_list[($.inArray(start, zoom_list) + 1) % zoom_list.length];// Image suivante
 
 					// Ajout des fleches
 					$("body").append(zoom_left + zoom_right);
+
+					// Affichage ou pas des fleches si images prev/next existe
+					if(prev != undefined) $("#zoom-left").show();
+					if(next != undefined) $("#zoom-right").show();
+
+					// Si mode loop on force l'affichage des fleches
+					if(loop) $(".zoom-nav").show();
+
+					// Navigation au clavier
+					$("body").on("keydown.zoom", function(event) {
+						if(event.keyCode == 37) img_nav('prev');// Left
+						else if(event.keyCode == 39) img_nav('next');// Right
+					});
 				}
 
 			});
@@ -287,8 +327,8 @@ $(function()
 
 	cible = "a[href$='.jpg'], a[href$='.png'], a[href$='.gif']";
 
-	// Si on click sur un lien vers une images on zoom dessu
-	$(cible).on("click.zoom", img_zoom);
+	// Si on click sur un lien vers une images on zoom dessu + curseur zoom
+	$(cible).on("click.zoom", img_zoom).css("cursor","zoom-in");
 
 	// Supprime les zoom en mode edition
 	edit.push(function() {
