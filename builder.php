@@ -49,7 +49,8 @@ switch(@$_GET['mode'])
 		include_once("../../../config.php");// Les variables
 		//include_once("../../../api/function.php");// Fonction
 
-		$_SESSION['editkey'] = 1;
+		if(!isset($_SESSION['editkey'])) $_SESSION['editkey'] = 1;
+
 		?>
 		<style>
 			main {
@@ -265,7 +266,7 @@ switch(@$_GET['mode'])
 		include_once("../../../api/function.php");// Fonction
 
 		// On récupère l’incrémental en cours des id de contenu éditable
-		$GLOBALS['editkey'] = $_SESSION['editkey'];
+		$GLOBALS['editkey'] = (int)$_SESSION['editkey'];
 
 		// Ajoute un élément
 		include('builder/'.$_REQUEST['file']);
