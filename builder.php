@@ -93,10 +93,24 @@ switch(@$_GET['mode'])
 					z-index: 15;
 				}
 				.move {
-					transform: scale(.8);
+					/* transform: scale(.9); */
 					border: 2px dashed #3d80b3;
 					background-color: aliceblue;
-					padding: 1rem;
+					/* padding: 1rem; */
+					position: relative;
+				}
+
+				.dragbuilder {
+					background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACAQMAAABIeJ9nAAAABlBMVEUAAAC/v79T5hyIAAAAAXRSTlMAQObYZgAAAAxJREFUCNdjaGBgAAABhACBKN161wAAAABJRU5ErkJggg==') repeat;
+					background-color: #9fe1ff;
+					position: absolute;
+					width: 15px;
+					height: 100%;
+					top: 0;		
+					left: 0;
+					/*margin-left: -0.5rem;*/
+					cursor: move;
+					z-index: 1;
 				}
 		</style>
 
@@ -173,11 +187,24 @@ switch(@$_GET['mode'])
 					// Change l'action sur le lien 'move'
 					$(".move-builder[href='javascript:move_builder();']").attr("href","javascript:unmove_builder();");
 
-					// Les rend déplaçable
-					$("[data-builder]").sortable();
+					// Ajout d'une zone de drag pour chaque élément
+					$("[data-builder]").prepend("<div class='dragbuilder'></div>");
 
 					// Change le style des éléments déplaçable
 					$("[data-builder]").addClass("move");
+
+					// Les rend déplaçable [data-builder]
+					$("main").sortable({
+						handle: ".dragbuilder",
+						items: '.move',
+						axis: "y",
+						//placeholder: "ui-state-highlight",
+						//helper:'clone',
+						stop: function(event, ui) {
+							tosave();// A sauvegarder
+						}
+					});
+
 				}
 
 				// Désactive le déplacement des éléments
@@ -194,7 +221,10 @@ switch(@$_GET['mode'])
 					editable_media_event();
 
 					// Désactive le déplacement
-					$("[data-builder]").sortable("destroy");
+					$("main").sortable("destroy");
+
+					// Supprime la zone de drag pour chaque élément
+					$("[data-builder] .dragbuilder").remove();
 
 					// Change le style des éléments déplaçable
 					$("[data-builder]").removeClass("move");
