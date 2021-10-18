@@ -167,14 +167,11 @@ switch(@$_GET['mode'])
 							// Joue les animations pour afficher les contenus
 							$(".animation").addClass("fire");
 
-							// Contenu editable
-							//@todo revoir la fonction editable_event pour y mettre ça
-							$(".editable").attr("contenteditable","true");
-
 							// Relance les events d'edition
 							editable_event();
 							editable_media_event();
 							editable_href_event();
+							editable_bg_event();
 						}
 					});
 				});
