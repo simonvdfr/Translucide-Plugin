@@ -19,10 +19,12 @@ switch(@$_GET['mode'])
 			// init les clé
 			$GLOBALS['editkey'] = key($array);
 
+			// Insert l'élément
 			include($_SERVER['DOCUMENT_ROOT'] . $GLOBALS['path']."theme/".$GLOBALS['theme']."/tpl/builder/".current($array).".php");
 
 			// pour l'ajout d'élément builder
-			$_SESSION['editkey'] = $GLOBALS['editkey'];
+			if($GLOBALS['editkey'] > $_SESSION['editkey']) 
+				$_SESSION['editkey'] = $GLOBALS['editkey'];
 		}
 		?>
 
@@ -86,7 +88,11 @@ switch(@$_GET['mode'])
 					padding: 0.5rem;
 				}
 
-				.move-builder { 
+				.lucide [data-builder] { position: relative; }
+
+					[data-builder] .fa-cancel { font-size: 1.4rem; }
+
+				.bt-move-builder { 
 					position: fixed;
 					right: 10px;
 					bottom: 10px;
@@ -131,7 +137,7 @@ switch(@$_GET['mode'])
 			?>
 		</ul>
 
-		<a href='javascript:move_builder();' class="move-builder" title="Déplacer les éléments"><i class='fa fa-fw fa-move big'></i></a>
+		<a href='javascript:move_builder();' class="bt-move-builder" title="Déplacer les éléments">Déplacer <i class='fa fa-fw fa-move big'></i></a>
 		
 
 		<script>
@@ -161,6 +167,7 @@ switch(@$_GET['mode'])
 							$(".animation").addClass("fire");
 
 							// Contenu editable
+							//@todo revoir la fonction editable_event pour y mettre ça
 							$(".editable").attr("contenteditable","true");
 
 							// Relance les events d'edition
@@ -172,20 +179,19 @@ switch(@$_GET['mode'])
 				});
 
 
-				//@finir : crée une zone de drag
 				// DÉPLACEMENT
 				// Rends déplaçables les éléments
 				move_builder = function() {
 
 					// Change le style du bouton et l'action
-					$(".move-builder .fa-move").css("transform","scale(.5)");
+					$(".fa-move").css("transform","scale(.5)");
 
 					// Désactive l'edition
 					$(".editable-media").off(".editable-media");
 					$(".editable").off();
 
 					// Change l'action sur le lien 'move'
-					$(".move-builder[href='javascript:move_builder();']").attr("href","javascript:unmove_builder();");
+					$("[href='javascript:move_builder();']").attr("href","javascript:unmove_builder();");
 
 					// Ajout d'une zone de drag pour chaque élément
 					$("[data-builder]").prepend("<div class='dragbuilder'></div>");
@@ -211,16 +217,17 @@ switch(@$_GET['mode'])
 				unmove_builder = function() {
 
 					// Change le style du bouton et l'action
-					$(".move-builder .fa-move").css("transform","scale(1)");
+					$(".bt-move-builder .fa-move").css("transform","scale(1)");
 
 					// Change l'action sur le lien 'move'
-					$(".move-builder[href='javascript:unmove_builder();']").attr("href","javascript:move_builder();");
+					$(".bt-move-builder[href='javascript:unmove_builder();']").attr("href","javascript:move_builder();");
 
 					// Active l'edition
 					editable_event();
 					editable_media_event();
 
 					// Désactive le déplacement
+					//$("main").sortable(); //@todo Vérifie si le sortable est lancer
 					$("main").sortable("destroy");
 
 					// Supprime la zone de drag pour chaque élément
@@ -231,14 +238,17 @@ switch(@$_GET['mode'])
 				}
 
 
-				// @todo finir : crée une zone de supp
 				// SUPPRESSION
-				// Ajout de la suppression au survole d'un bloc
-				//$("[data-builder]").append("<a href='javascript:void(0)' onclick='remove_builder(this)'><i class='fa fa-cancel absolute none red' style='top: -5px; right: -5px; z-index: 10;' title='"+ __("Remove") +"'></i></a>");
+				add_remove = function(that) {
+					// Ajout de la suppression au survole d'un bloc
+					$("[data-builder]").append("<a href='javascript:void(0)' onclick='remove_builder(this)'><i class='fa fa-cancel absolute none red pointer' style='top: 0; right: 0; z-index: 10;' title='"+ __("Remove") +"'></i></a>");
+				};
+
+				add_remove();
+
 
 				// Fonction pour supprimer un bloc
 				remove_builder = function(that) {
-					//console.log($(that).closest("[data-builder]"));
 					$(that).closest("[data-builder]").fadeOut("slow", function() {
 						this.remove();
 					});
@@ -258,9 +268,20 @@ switch(@$_GET['mode'])
 						return $(elem).data("href").split("-").pop();
 				}
 
+				// Avant de récolter les contenus on les nettoie des fonctions admin
+				before_data.push(function()
+				{
+					// Désactive le déplacement avant sauvegarde
+					if($("main").hasClass("ui-sortable")) unmove_builder();
+
+					// Supprime de la dom les supp
+					$("[onclick='remove_builder(this)']").remove();
+				});
+
 				// Crée une liste json des éléments builder pour save
 				before_save.push(function()
 				{
+					// Envoie les datas
 					data["content"]["builder"] = {};
 					$(document).find(".content [data-builder]").each(function(index, element)
 					{
@@ -284,6 +305,14 @@ switch(@$_GET['mode'])
 						data["content"]["builder"][index][key] = $(element).data("builder");
 					});
 				});
+
+				// Après la sauvegarde
+				before_save.push(function()
+				{
+					// Remets les options pour supprimer un élément
+					add_remove();
+				});
+
 			});
 		</script>			
 		<?php
