@@ -1,6 +1,7 @@
 <?php 
-// Ajouter un dossier builder/ dans le dossier tpl/
-// y déposer des fichiers .php avec des sections éditables
+// Ajouter ces fichiers dans votre dossier "tpl"
+//// Ajouter un dossier builder/ dans le dossier tpl/
+//// y déposer des fichiers .php avec des sections éditables
 
 //@todo si choix tpl builder on regarde dans la base de donnée les pages qui l'uilisent et propose de reprendre la tpl
 //@todo tous les attributs de l'édition ne sont pas dans les fonctions _event du coup l'edition n'est pas complete lors de l'ajout à la volé d'un élément editable
