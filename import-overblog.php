@@ -10,13 +10,13 @@ $array = json_decode(json_encode((array)$xml), TRUE);
 
 
 /*
-[title] => Consommer local n'est pas un danger, c'est une nécessité !
-[slug] => 2016/09/consommer-local-n-est-pas-un-danger-c-est-une-necessite.html
-[tags] => Regard critique,Propositions
+[title] => 
+[slug] => 
+[tags] => 
 [created_at] => 2016-09-09T12:07:00+02:00
 [published_at] => 2016-09-09T10:06:51+02:00
 [modified_at] => 2016-09-09T15:47:05+02:00
-[author] => Benoît Thévard => id = 2
+[author] =>
 [content]
 */
 
