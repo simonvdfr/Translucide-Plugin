@@ -110,6 +110,8 @@ foreach($array['posts']['post'] as $key => $val)
                 // réécriture des tailles
                 $new_width = 690;
 
+                $dest_img_big = null;
+
                 if(file_exists($chemin.$dest_img)) echo 'ℹ️ ';
                 else 
                 {
@@ -120,6 +122,7 @@ foreach($array['posts']['post'] as $key => $val)
                         // Si l'image est plus grande que la taille max
                         if($img->hasAttribute('width') and $img->getAttribute('width') > $new_width)  
                         {    
+                            $dest_img_big = $dest_img;
                             $dest_img = resize($chemin.$dest_img, $new_width, null, 'article');
 
                             $content = str_replace(
@@ -132,6 +135,7 @@ foreach($array['posts']['post'] as $key => $val)
                         // Si l'image original est plus grande que la taille affiché
                         else if($img->hasAttribute('width') and $source_width > $img->hasAttribute('width'))
                         {    
+                            $dest_img_big = $dest_img;
                             $dest_img = resize($chemin.$dest_img, $img->hasAttribute('width'), null, 'article');
 
                             echo 'source_width > width attr';
@@ -139,6 +143,7 @@ foreach($array['posts']['post'] as $key => $val)
                         // Si l'image original est plus grande que la largeur de l'article
                         else if($source_width > $new_width)
                         {    
+                            $dest_img_big = $dest_img;
                             $dest_img = resize($chemin.$dest_img, $new_width, null, 'article');
 
                             echo 'source_width > new_width';
@@ -162,7 +167,15 @@ foreach($array['posts']['post'] as $key => $val)
 
                 echo'<a href="'.($source_img).'" target="_blank">'.($source_img).'</a> → '.($dest_img).'<br>';
 
-                $content = str_replace(($source_img), ($GLOBALS['path'].$dest_img), $content);
+                // les liens vers les grandes images
+                if($dest_img_big)
+                $content = str_replace('href="'.$source_img, 'href="'.$dest_img_big, $content);
+
+                // les images
+                $content = str_replace('src="'.$source_img, 'src="'.$dest_img, $content);
+
+                // sécuritée
+                $content = str_replace($source_img, $dest_img, $content);
             }
 
         }
