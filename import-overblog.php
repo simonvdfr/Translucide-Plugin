@@ -75,7 +75,7 @@ foreach($array['posts']['post'] as $key => $val)
 
         $content = $val['content'];
 
-        $content = preg_replace("/\r\n|\r|\n/", '<br/>', $content); //echappement retours lignes
+        //$content = preg_replace("/\r\n|\r|\n/", '<br/>', $content); //echappement retours lignes
         //$content = htmlentities($content,ENT_IGNORE,'UTF-8');
 
         //echo '<pre>'.htmlspecialchars($content).'</pre>';
