@@ -75,7 +75,11 @@ foreach($array['posts']['post'] as $key => $val)
 
         $content = $val['content'];
 
-        //$content = preg_replace("/\r\n|\r|\n/", '<br/>', $content); //echappement retours lignes
+        // Supprime les styles
+        $content = preg_replace('/<([^>]+)(\sstyle=(?P<stq>["\'])(.*)\k<stq>)([^<]*)>/iUs', '<$1$5>', $content);
+
+        //echappement retours lignes
+        //$content = preg_replace("/\r\n|\r|\n/", '<br/>', $content); 
         //$content = htmlentities($content,ENT_IGNORE,'UTF-8');
 
         //echo '<pre>'.htmlspecialchars($content).'</pre>';
@@ -216,9 +220,9 @@ foreach($array['posts']['post'] as $key => $val)
         'description' => '\'\'',
         'content' => '\''.$GLOBALS['connect']->real_escape_string($json_fiche).'\'',
         'user_update' => 2,
-        'date_update' => '\''.$val['modified_at'].'\'',
+        'date_update' => '\''.date('Y-m-d H:i:s', strtotime(str_replace('-', '/', $val['modified_at']))).'\'',
         'user_insert' => 2,
-        'date_insert' => '\''.$val['created_at'].'\''
+        'date_insert' => '\''.date('Y-m-d H:i:s', strtotime(str_replace('-', '/', $val['created_at']))).'\''
     );
 
     //-- fin alimentation tableau
@@ -242,7 +246,8 @@ foreach($array['posts']['post'] as $key => $val)
 
 //echo '<pre>'.htmlspecialchars($script_export).'</pre>';
 
-//$GLOBALS['connect']->query($script_export);
+$GLOBALS['connect']->query($script_export);
+echo $GLOBALS['connect']->error;
 
 //-- Début ecriture fichier sql
     $script_sql = fopen('script_export.sql', 'w');
