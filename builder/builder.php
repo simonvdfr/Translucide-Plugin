@@ -12,9 +12,10 @@ switch(@$_GET['mode'])
 	default:
 		if(!$GLOBALS['domain']) exit;
 
+		//highlight_string(print_r($GLOBALS['content'], true));
 
 		// Include les éléments du builder pour affichage
-		if(isset($GLOBALS['content']['builder']))
+		if(isset($GLOBALS['content']['builder']) and is_array($GLOBALS['content']['builder']))
 		foreach($GLOBALS['content']['builder'] as $index => $array)
 		{
 			// init les clé
